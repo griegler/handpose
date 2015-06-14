@@ -1,0 +1,28 @@
+#ifndef DATA_PROVIDER_CSV_H
+#define DATA_PROVIDER_CSV_H
+
+#include <data_provider.h>
+
+#include "pose.pb.h"
+
+template <typename Dtype>
+class DataProviderCsv : public DataProvider<Dtype> {
+public:
+  DataProviderCsv(const pose::DataProviderParameter& param);
+  virtual ~DataProviderCsv() {}
+  
+  virtual boost::filesystem::path depthPath(int idx) const;  
+  virtual void shuffle();
+
+protected:
+  virtual std::vector< cv::Vec3f > gt_internal(int idx) const;
+  virtual cv::Vec3f hint2d_internal(int idx) const;
+  virtual cv::Mat_< Dtype > depth_internal(int idx);
+  virtual cv::Mat_< Dtype > ir_internal(int idx);
+
+private:  
+  std::vector<boost::filesystem::path> depth_paths_;
+  std::vector<std::vector<cv::Vec3f> > annos_;
+};
+
+#endif

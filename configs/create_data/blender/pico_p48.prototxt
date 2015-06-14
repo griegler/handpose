@@ -1,0 +1,37 @@
+shuffle: true
+
+rotations: true
+rotations_from: -90.0
+rotations_to: 90.0
+rotations_step: 45.0
+
+mirroring: false
+
+samples_per_hdf5: 128000
+
+out_prefix: "/mnt/ssddata/h5/blender/pico_p48"
+
+data_provider_param {
+  type: BLENDER
+  bg_value: 1250.0
+  n_pts: 20
+  blender_param {
+    data_path: "/mnt/ssddata/pico"
+    recursive: true
+    
+    noise_gaussian_sigma: 3
+  }
+}
+
+projection_param {
+  type: PROJECTIVE
+}
+
+segmentation_param {
+  type: MEANSHIFT
+}
+
+patch_extraction_param {
+  patch_width: 48
+  normalize_depth: true
+}

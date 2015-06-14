@@ -1,0 +1,236 @@
+package pose;
+
+//------------------------------------------------------------------------------
+message ProjectionParameter {
+  enum ProjectionType {
+    NONE = 0;
+    ORTHOGRAPHIC = 1;
+    PROJECTIVE = 2;
+  }
+  
+  optional ProjectionType type = 1 [default = NONE];
+  
+  //if empty try to find in data dir
+  optional string calib_path = 2 [default = ""]; 
+}
+
+
+//------------------------------------------------------------------------------
+message DataProviderParameter {
+  enum DataProviderType {
+    NONE = 0;
+    DTANG = 1;
+    CSV = 2;
+    BLENDER = 3;
+    CAM = 4;
+  }
+  
+  optional DataProviderType type = 1 [default = NONE];
+
+  optional ProjectionParameter projection_param = 2;
+  
+  optional float bg_value = 3 [default = 1000.0];
+  optional uint32 n_pts = 4 [default = 20];
+  optional bool shuffle = 5 [default = false];
+  optional uint32 inc = 6 [default = 1];
+  optional bool undistort = 7 [default = false];
+  optional bool flip = 8 [default = false];
+  
+  optional DTangParameter dtang_param = 9;
+  optional CsvParameter csv_param = 10;
+  optional BlenderParameter blender_param = 11;
+  optional CamParameter cam_param = 12;
+}
+
+message DTangParameter {
+  optional string label_path = 1;
+}
+
+message CsvParameter {
+  optional string data_path = 1;
+  optional bool recursive = 3 [default = true];
+  
+  enum AnnoType {
+    ALL = 0; //load also depth maps without anno
+    ANNO = 1; //load only depth maps with anno (also if only anno is init, ...)
+    VALID_ANNO = 2;
+  }
+  optional AnnoType anno_type = 4 [default = VALID_ANNO];
+  
+  optional float min_ir = 5 [default = 250.0];
+  optional uint32 median_ksize = 6 [default = 3];
+}
+
+message BlenderParameter {
+  optional string data_path = 1;
+  optional bool recursive = 3 [default = true];
+  
+  optional float noise_gaussian_sigma = 4 [default = 0.0];
+}
+
+message CamParameter {
+  enum CameraType {
+    NONE = 0;
+    CREATIVE = 1;
+    PMD_PICO = 2;
+  }
+
+  optional CameraType type = 1 [default = NONE];
+}
+
+
+//------------------------------------------------------------------------------
+message SegmentationParameter {
+  enum SegmentationType {
+    NONE = 0;
+    MEANSHIFT = 1;
+    RF = 2;
+    THRESHOLD = 3;
+  }
+  
+  optional SegmentationType type = 1 [default = NONE];
+  
+  optional SegmentationMeanshiftParameter meanshift_param = 4;
+  optional SegmentationRfParameter rf_param = 2;
+  optional SegmentationThresholdParameter threshold_param = 3;
+}
+
+message SegmentationMeanshiftParameter {
+  optional bool use_hint = 1 [default = true];
+  optional double bandwidth = 2 [default = 0.075];
+  optional double neighbourhood = 3 [default = 1e-5];
+  optional uint32 max_iters = 4 [default = 100];
+  optional float eps = 5 [default = 0.1];
+}
+
+message SegmentationRfParameter {
+  optional string forest_path = 1;
+  optional float min_prob = 2 [default = 0.8];
+  optional uint32 struc_elem_size = 3 [default = 5];
+}
+
+message SegmentationThresholdParameter {
+  enum Type {
+    RANGE = 0;
+    NEAREST = 1;
+  }     
+  optional Type type = 1 [default = RANGE];
+  
+  //range
+  optional float min_ir = 2 [default = 0];
+  optional float max_ir = 3 [default = 1e9];
+  optional float min_d = 4 [default = 0];
+  optional float max_d = 5 [default = 1e9];
+  
+  //nearest
+  optional float t = 6 [default = 500];
+}
+
+
+//------------------------------------------------------------------------------
+message PatchExtractionParameter {
+  repeated uint32 patch_width = 1 [packed = true];
+  optional bool normalize_depth = 2 [default = true];
+}
+
+
+//------------------------------------------------------------------------------
+message PreprocessParameter {
+  optional string mean_path = 1 [default = ""];
+}
+
+//------------------------------------------------------------------------------
+message InferenceParameter {
+  enum InferenceType {
+    NONE = 0;
+    NN_REGRESSION = 1;
+    NN_HEATMAP = 2;
+    RF_SIMPLE_REGRESSION = 3;
+  }
+  
+  optional InferenceType type = 1 [default = NONE];
+  
+  optional NNRegressionParameter nn_regression_param = 2;
+  optional NNHeatmapParameter nn_heatmap_param = 4;
+  optional RFParameter rf_param = 3;
+}
+
+message NNRegressionParameter {
+  optional string net_path = 1;
+  optional string weights_path = 2;
+}
+
+message NNHeatmapParameter {
+  optional string net_path = 1;
+  optional string weights_path = 2;
+  
+  enum HeatmapType {
+    NONE = 0;
+    TWO_D = 1; //2D
+    TWO_POINT_FIVE_D = 2; //2D + 1D depth
+    THREE_D = 3; //3D
+  }
+  
+  optional HeatmapType type = 3 [default = NONE];
+  optional string layer_name_2d = 4 [default = ""];
+  optional string layer_name_depth = 5 [default = ""];
+  optional string layer_name_3d = 6 [default = ""];
+  
+  optional float min_heatmap_val = 16 [default = 0.001];
+  
+  optional uint32 dim_x = 8 [default = 18];
+  optional uint32 dim_y = 7 [default = 18];
+  optional uint32 dim_z = 9 [default = 25];
+  
+  optional int32 x_from = 10 [default = -1];
+  optional int32 x_to = 11 [default = 1];
+  optional int32 y_from = 12 [default = -1];
+  optional int32 y_to = 13 [default = 1];
+  optional int32 z_from = 14 [default = -1];
+  optional int32 z_to = 15 [default = 1];
+}
+
+message RFParameter {
+  optional string forest_path = 1;
+  optional string transform_csv = 2;
+}
+
+
+
+
+
+//------------------------------------------------------------------------------
+message CreateDataParameter {
+  optional DataProviderParameter data_provider_param =1;
+  optional SegmentationParameter segmentation_param = 2;
+  optional PatchExtractionParameter patch_extraction_param = 3;
+  
+  optional bool shuffle = 4 [default = true];
+  
+  optional bool rotations = 5 [default = true];
+  optional float rotations_from = 6 [default = -90.0];
+  optional float rotations_to = 7 [default = 90.0];
+  optional float rotations_step = 8 [default = 15.0];
+  
+  optional bool mirroring = 9 [default = false];
+  
+  optional uint32 samples_per_hdf5 = 10 [default = 1000000];
+  
+  optional string out_prefix = 11;
+}
+
+
+//------------------------------------------------------------------------------
+message EvaluationParameter {
+  optional DataProviderParameter data_provider_param =1;
+  optional SegmentationParameter segmentation_param = 2;
+  optional PatchExtractionParameter patch_extraction_param = 3;
+  optional PreprocessParameter preprocess_param = 4;
+  optional InferenceParameter inference_param = 5;
+  
+  optional string result_path = 6;
+  //empty => no names txt file
+  optional string names_path = 7 [default = ""];
+  
+  optional string segmentation_result_path = 8 [default = ""];
+}

@@ -1,0 +1,26 @@
+shuffle: false
+rotations: false
+mirroring: false
+out_prefix: "../data/h5/dtang/48/test"
+
+data_provider_param {
+  type: DTANG
+  bg_value: 1000.0
+  n_pts: 16
+  dtang_param {
+    label_path: "../../datasets/dtang/Testing/test_seq_1.txt"
+  }
+}
+
+projection_param {
+  type: ORTHOGRAPHIC
+}
+
+segmentation_param {
+  type: MEANSHIFT
+}
+
+patch_extraction_param {
+  patch_width: 48
+  normalize_depth: true
+}

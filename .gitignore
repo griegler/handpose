@@ -1,0 +1,9 @@
+build*
+data
+.ycm_extra_conf.py*
+**/*pyc
+**/*npy
+matlab/*bin
+matlab/*config
+matlab/*csv
+python/subspace/gt3.csv
