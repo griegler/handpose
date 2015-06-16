@@ -1,3 +1,31 @@
+// Copyright (C) 2015 Institute for Computer Graphics and Vision (ICG),
+//   Graz University of Technology (TU GRAZ)
+
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+// 1. Redistributions of source code must retain the above copyright
+//    notice, this list of conditions and the following disclaimer.
+// 2. Redistributions in binary form must reproduce the above copyright
+//    notice, this list of conditions and the following disclaimer in the
+//    documentation and/or other materials provided with the distribution.
+// 3. All advertising materials mentioning features or use of this software
+//    must display the following acknowledgement:
+//    This product includes software developed by the ICG, TU GRAZ.
+// 4. Neither the name of the ICG, TU GRAZ nor the
+//    names of its contributors may be used to endorse or promote products
+//    derived from this software without specific prior written permission.
+
+// THIS SOFTWARE IS PROVIDED BY ICG, TU GRAZ ''AS IS'' AND ANY
+// EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL ICG, TU GRAZ BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
 #include "hand_segmentation_rf.h"
 
 #include <rv/ocv/convert.h>
@@ -9,9 +37,7 @@
 #include <opencv2/highgui/highgui.hpp>
 
 template <typename Dtype>
-std::vector<HandSegmentationResult> HandSegmentationRf<Dtype>::operator()(
-    const cv::Mat_<Dtype>& depth, const cv::Mat_<Dtype>& ir, 
-    const cv::Vec3f& hint_2d) const {    
+std::vector<HandSegmentationResult> HandSegmentationRf<Dtype>::operator()(const cv::Mat_<Dtype>& depth, const cv::Mat_<Dtype>& ir, const cv::Vec3f& hint_2d) const {    
   cv::Mat_<Dtype> fg_prob = cv::Mat_<Dtype>::zeros(depth.rows, depth.cols);
   cv::Mat_<uchar> mask = cv::Mat_<uchar>::zeros(depth.rows, depth.cols);
 
@@ -97,10 +123,8 @@ rv::rf::ForestPtr HandSegmentationRf<Dtype>::train(
   const int pos_samples_p_image = 120;
   const int neg_samples_p_image = 60;
   
-  const float pos_samples_weight = float(neg_samples_p_image) / 
-    float(pos_samples_p_image + neg_samples_p_image);
-  const float neg_samples_weight = float(pos_samples_p_image) / 
-    float(pos_samples_p_image + neg_samples_p_image);
+  const float pos_samples_weight = float(neg_samples_p_image) / float(pos_samples_p_image + neg_samples_p_image);
+  const float neg_samples_weight = float(pos_samples_p_image) / float(pos_samples_p_image + neg_samples_p_image);
   
   //create samples
   std::vector<rv::rf::SamplePtr> samples;
