@@ -1,6 +1,6 @@
 # Framework for Articulated Hand Pose Estimation
 
-A framework for articulated hand pose estimation. See the [project site] (http://rvlab.icg.tugraz.at/pose) for more details.
+A framework for articulated hand pose estimation. See the [project site](http://rvlab.icg.tugraz.at/pose) for more details.
 
 ## Citing
 Pleas cite this work if it helps your research
